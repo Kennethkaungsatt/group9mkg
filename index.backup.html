@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Group 9 - MKG Section 1 - Mae Fah Luang University</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* RESET */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --white: #ffffff;
+  --off-white: #fafaf8;
+  --light: #f4f3f0;
+  --border: #e8e6e1;
+  --text: #1a1a1a;
+  --muted: #888880;
+  --accent: #4a7c59;
+  --accent-light: #e8f0eb;
+  --red: #c94a4a;
+  --fs-hero: clamp(48px, 8vw, 96px);
+  --fs-title-lg: clamp(36px, 5vw, 64px);
+  --fs-title-md: clamp(42px, 6vw, 80px);
+  --fs-title-sm: clamp(42px, 4vw, 72px);
+}
+
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+video { max-width: 100%; height: auto; }
+iframe { width: 100%; border: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--white);
+  color: var(--text);
+}
+
+#intro {
+  position: fixed; inset: 0; z-index: 1000; background: #000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+#intro.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+#intro-bg {
+  position: absolute; inset: 0;
+  background-image: url('assets/team/hero.jpg');
+  background-size: cover; background-position: center top;
+  opacity: 0; transition: opacity 1.5s ease;
+}
+#intro-bg.loaded { opacity: 0.55; }
+
+.intro-content {
+  position: relative; z-index: 2; text-align: center; padding: 40px;
+  animation: fadeUp 1s ease 0.5s both;
+}
+.intro-tag { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 20px; font-weight: 400; }
+.intro-title { font-family: 'Cormorant Garamond', serif; font-size: var(--fs-hero); font-weight: 300; color: #fff; line-height: 1; margin-bottom: 8px; letter-spacing: -1px; }
+.intro-subtitle { font-family: 'Cormorant Garamond', serif; font-size: clamp(16px, 3vw, 24px); font-style: italic; color: rgba(255,255,255,0.7); font-weight: 300; margin-bottom: 48px; }
+
+.enter-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.3); color: #fff;
+  padding: 14px 36px; border-radius: 100px; font-size: 13px;
+  letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+  transition: all 0.3s ease; font-family: 'DM Sans', sans-serif; font-weight: 400;
+}
+.enter-btn:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); }
+
+.scroll-hint {
+  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+  color: rgba(255,255,255,0.4); font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase; display: flex; flex-direction: column; align-items: center;
+  gap: 8px; animation: fadeUp 1s ease 1.5s both; transition: opacity 0.5s ease;
+}
+.scroll-hint.fade-out { opacity: 0; pointer-events: none; }
+.scroll-hint::after { content: ''; width: 1px; height: 40px; background: rgba(255,255,255,0.3); animation: scrollLine 1.5s ease infinite; }
+
+.music-note { font-size: 16px; animation: pulse 2s ease infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+@keyframes scrollLine { 0%{transform:scaleY(0);transform-origin:top} 50%{transform:scaleY(1);transform-origin:top} 51%{transform:scaleY(1);transform-origin:bottom} 100%{transform:scaleY(0);transform-origin:bottom} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 20px 48px; display: flex; justify-content: space-between; align-items: center;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  transform: translateY(-100%); transition: transform 0.5s ease;
+}
+nav.visible { transform: translateY(0); }
+@media (scripting: none) { nav { transform: translateY(0); } }
+
+.nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 400; letter-spacing: 1px; color: var(--text); }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; font-weight: 400; }
+.nav-links a:hover { color: var(--text); }
+
+.music-btn {
+  background: none; border: 1px solid var(--border); border-radius: 100px;
+  padding: 6px 14px; font-size: 12px; cursor: pointer; color: var(--muted);
+  transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+  font-family: 'DM Sans', sans-serif;
+}
+.music-btn:hover { border-color: var(--accent); color: var(--accent); }
+.music-btn.playing { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+#audio-toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--text); color: #fff; padding: 10px 20px;
+  border-radius: 100px; font-size: 12px; letter-spacing: 1px;
+  z-index: 200; transition: transform 0.4s ease, opacity 0.4s ease;
+  opacity: 0; pointer-events: none; white-space: nowrap;
+}
+#audio-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+section { padding: 100px 48px; }
+.section-tag { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; font-weight: 500; }
+.section-title { font-family: 'Cormorant Garamond', serif; font-size: var(--fs-title-lg); font-weight: 300; line-height: 1.05; color: var(--text); }
+
+.hero-section { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; padding: 0; }
+.hero-image { height: 100vh; position: relative; overflow: hidden; }
+.hero-image img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.hero-text { display: flex; flex-direction: column; justify-content: center; padding: 100px 72px; background: var(--white); }
+.hero-eyebrow { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); margin-bottom: 24px; }
+.hero-title { font-family: 'Cormorant Garamond', serif; font-size: var(--fs-title-sm); font-weight: 300; line-height: 1.05; margin-bottom: 24px; }
+.hero-title em { font-style: italic; color: var(--accent); }
+.hero-desc { font-size: 15px; line-height: 1.9; color: var(--muted); max-width: 400px; margin-bottom: 48px; font-weight: 300; }
+.hero-stats { display: flex; gap: 40px; }
+.stat-num { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; color: var(--text); line-height: 1; }
+.stat-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+.chapter-cover {
+  height: 100vh; position: relative; overflow: hidden; cursor: pointer;
+  display: flex; align-items: flex-end; padding: 80px;
+  appearance: none; background: none; border: none; width: 100%; text-align: left;
+}
+.chapter-cover:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+.chapter-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
+.chapter-cover:hover img { transform: scale(1.03); }
+.chapter-cover::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%); }
+.chapter-info { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; width: 100%; }
+.chapter-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
+.chapter-title { font-family: 'Cormorant Garamond', serif; font-size: var(--fs-title-md); font-weight: 300; color: #fff; line-height: 1; }
+.chapter-cta { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.8); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; border: 1px solid rgba(255,255,255,0.4); padding: 12px 24px; border-radius: 100px; transition: all 0.3s; white-space: nowrap; }
+.chapter-cover:hover .chapter-cta, .chapter-cover:focus-visible .chapter-cta { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.8); color: #fff; }
+
+.gallery-section { background: var(--off-white); padding: 0; display: none; }
+.gallery-section.open { display: block; }
+.gallery-header { padding: 72px 48px 48px; display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid var(--border); }
+.gallery-close { display: flex; align-items: center; gap: 8px; background: none; border: 1px solid var(--border); padding: 10px 20px; border-radius: 100px; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; color: var(--muted); transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+.gallery-close:hover { border-color: var(--text); color: var(--text); }
+.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--border); }
+.photo-item { background: var(--light); overflow: hidden; cursor: zoom-in; position: relative; }
+.photo-item img { width: 100%; height: 280px; object-fit: cover; display: block; transition: transform 0.5s ease; }
+.photo-item.tall img { height: 564px; }
+.photo-item:hover img { transform: scale(1.04); }
+.photo-caption { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.5), transparent); padding: 20px 16px 12px; color: rgba(255,255,255,0.9); font-size: 12px; letter-spacing: 0.5px; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.photo-item:hover .photo-caption { opacity: 1; }
+
+.about-section { background: var(--white); display: grid; grid-template-columns: 1fr 1fr; gap: 0; padding: 0; }
+.about-image { height: 700px; overflow: hidden; }
+.about-image img { width: 100%; height: 100%; object-fit: cover; }
+.about-text { padding: 100px 72px; display: flex; flex-direction: column; justify-content: center; background: var(--off-white); }
+.about-text p { font-size: 16px; line-height: 2; color: var(--muted); font-weight: 300; margin-bottom: 32px; }
+
+.founder-section { background: var(--white); display: grid; grid-template-columns: 1fr 1fr; gap: 0; padding: 0; }
+.founder-text { padding: 100px 72px; display: flex; flex-direction: column; justify-content: center; }
+.founder-text p { font-size: 15px; line-height: 1.9; color: var(--muted); font-weight: 300; margin-bottom: 20px; }
+.founder-image { height: 700px; overflow: hidden; }
+.founder-image img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+
+.videos-section { background: var(--light); padding: 100px 48px; }
+.videos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 56px; }
+.video-item { border-radius: 12px; overflow: hidden; background: #000; position: relative; }
+.video-item video { width: 100%; max-height: 560px; object-fit: cover; display: block; }
+.video-error { display: none; align-items: center; justify-content: center; height: 280px; color: var(--muted); font-size: 13px; background: var(--light); flex-direction: column; gap: 12px; }
+.video-error span { font-size: 32px; }
+.video-label { padding: 16px 20px; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); background: var(--white); border-top: 1px solid var(--border); }
+
+.project-section { background: var(--white); padding: 100px 48px; }
+.project-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 56px; }
+.project-card { border: 1px solid var(--border); border-radius: 12px; padding: 40px 32px; transition: all .3s ease; }
+.project-card:hover { border-color: var(--accent); box-shadow: 0 20px 50px rgba(0,0,0,.08); transform: translateY(-4px); }
+.card-number { font-family: 'Cormorant Garamond', serif; font-size: 56px; font-weight: 300; color: var(--border); line-height: 1; margin-bottom: 20px; }
+.card-title { font-size: 15px; font-weight: 500; margin-bottom: 12px; color: var(--text); }
+.card-desc { font-size: 14px; line-height: 1.8; color: var(--muted); font-weight: 300; }
+
+.findus-section { background: var(--off-white); display: grid; grid-template-columns: 1fr 1fr; gap: 0; padding: 0; }
+.findus-info { padding: 100px 72px; }
+.findus-info p { font-size: 15px; line-height: 1.9; color: var(--muted); font-weight: 300; margin-bottom: 40px; }
+.social-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 40px; }
+.social-link { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border: 1px solid var(--border); border-radius: 10px; text-decoration: none; color: var(--text); font-size: 13px; transition: all 0.2s; background: var(--white); }
+.social-link:hover { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+.social-icon { font-size: 18px; }
+
+.map-container { height: 100%; min-height: 500px; position: relative; background: var(--light); }
+.map-container iframe { width: 100%; height: 100%; border: none; display: block; }
+.map-fallback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; color: var(--muted); font-size: 14px; }
+.map-fallback a { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--accent); color: #fff; border-radius: 100px; text-decoration: none; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; transition: opacity 0.2s; }
+.map-fallback a:hover { opacity: 0.85; }
+
+footer { background: var(--text); color: rgba(255,255,255,0.4); padding: 60px 48px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+.footer-brand { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; color: rgba(255,255,255,0.8); }
+footer p { font-size: 12px; letter-spacing: 0.5px; }
+
+#lightbox { position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; }
+#lightbox.open { display: flex; }
+#lightbox img { max-width: 90vw; max-height: 90vh; object-fit: contain; border-radius: 4px; }
+#lightbox-close { position: absolute; top: 24px; right: 32px; color: white; font-size: 32px; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; background: none; border: none; line-height: 1; font-family: sans-serif; }
+#lightbox-close:hover { opacity: 1; }
+
+.reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 900px) {
+  nav { padding: 16px 24px; }
+  .nav-links { display: none; }
+  section { padding: 72px 24px; }
+  .hero-section { grid-template-columns: 1fr; }
+  .hero-image { height: 60vh; }
+  .hero-text { padding: 60px 24px; }
+  .about-section, .founder-section, .findus-section { grid-template-columns: 1fr; }
+  .about-image, .founder-image { height: 400px; }
+  .project-cards, .videos-grid { grid-template-columns: 1fr; }
+  .photo-grid { grid-template-columns: repeat(2, 1fr); }
+  .social-grid { grid-template-columns: 1fr; }
+  .chapter-cover { padding: 40px 24px; height: 70vh; }
+  .gallery-header { padding: 48px 24px 32px; flex-direction: column; align-items: flex-start; gap: 20px; }
+  .findus-info { padding: 72px 24px; }
+  footer { padding: 48px 24px; }
+  .interview-split { grid-template-columns: 1fr !important; }
+  .interview-split > div:first-child { height: 300px !important; }
+  .interview-split > div:last-child { padding: 48px 24px !important; }
+}
+</style>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XQG4YWY7HC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XQG4YWY7HC');
+</script>
+</head>
+<body>
+
+<audio id="bgAudio" loop preload="auto">
+  <source src="assets/audio/raindance.mp3" type="audio/mpeg">
+</audio>
+
+<div id="audio-toast" role="status" aria-live="polite"></div>
+
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <button id="lightbox-close" aria-label="Close photo viewer">x</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<div id="intro" role="region" aria-label="Introduction">
+  <div id="intro-bg" aria-hidden="true"></div>
+  <div class="intro-content">
+    <div class="intro-tag">Mae Fah Luang University - Marketing Section 1</div>
+    <h1 class="intro-title">Group 9</h1>
+    <p class="intro-subtitle">A journey through Chiang Rai</p>
+    <button class="enter-btn" id="enterBtn">
+      <span class="music-note" aria-hidden="true">&#9834;</span>
+      Enter with music
+    </button>
+  </div>
+  <div class="scroll-hint" id="scrollHint" aria-hidden="true">scroll</div>
+</div>
+
+<nav id="mainNav" aria-label="Main navigation">
+  <div class="nav-logo">Group 9 - MKG</div>
+  <ul class="nav-links">
+    <li><a href="#pottery">Pottery</a></li>
+    <li><a href="#cafe">Cafe</a></li>
+    <li><a href="#project">Project</a></li>
+    <li><a href="#findus">Find Us</a></li>
+  </ul>
+  <button class="music-btn" id="musicBtn" aria-pressed="false">
+    <span id="musicIcon" aria-hidden="true">&#9834;</span>
+    <span id="musicLabel">Play music</span>
+  </button>
+</nav>
+
+<main id="top">
+
+  <div class="hero-section">
+    <div class="hero-image">
+      <img src="assets/team/hero.jpg" loading="lazy" alt="Group 9 at Friendcation cafe">
+    </div>
+    <div class="hero-text">
+      <div class="hero-eyebrow">MFU Marketing - Section 1 - 2025</div>
+      <h2 class="hero-title reveal">Our<br><em>Chiang Rai</em><br>story</h2>
+      <p class="hero-desc reveal">Twelve students. One semester. Two unforgettable places. This is our agile marketing journey and the friendships that made it worth remembering.</p>
+      <div class="hero-stats reveal">
+        <div><div class="stat-num">12</div><div class="stat-label">Members</div></div>
+        <div><div class="stat-num">2</div><div class="stat-label">Locations</div></div>
+        <div><div class="stat-num">3</div><div class="stat-label">Experiments</div></div>
+      </div>
+    </div>
+  </div>
+
+  <button class="chapter-cover" id="pottery" onclick="toggleGallery('pottery-gallery')" aria-expanded="false" aria-controls="pottery-gallery">
+    <img src="assets/pottery/p1.jpg" loading="lazy" alt="Doy Din Dang Pottery grounds">
+    <div class="chapter-info">
+      <div>
+        <div class="chapter-label">Chapter One</div>
+        <div class="chapter-title">Doy Din Dang<br>Pottery</div>
+      </div>
+      <div class="chapter-cta" aria-hidden="true">View photos</div>
+    </div>
+  </button>
+
+  <div class="gallery-section" id="pottery-gallery">
+    <div class="gallery-header">
+      <div>
+        <div class="section-tag">Doy Din Dang</div>
+        <h2 class="section-title">The pottery<br>that started it all</h2>
+      </div>
+      <button class="gallery-close" onclick="toggleGallery('pottery-gallery')" aria-label="Close pottery gallery">x Close</button>
+    </div>
+    <div style="padding:0 48px 40px;max-width:680px">
+      <p style="font-size:15px;line-height:1.9;color:var(--muted);font-weight:300;margin-top:24px">Nestled in the hills of Northern Thailand, Doy Din Dang meaning red clay hill is a forest studio founded by artist Somluk Pantiboon, who trained under master potters in Japan before returning to Chiang Rai to build something truly his own. Every piece here is handmade using local raw materials, blending daily-life functionality with contemporary artistry. Located about 12km north of Chiang Rai, the studio features a large showroom and a hidden coffee shop tucked behind it.</p>
+      <a href="https://www.facebook.com/doydindangpotter/?locale=th_TH" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;margin-top:24px;color:var(--accent);font-size:13px;text-decoration:none;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--accent);padding-bottom:2px">Follow on Facebook</a>
+    </div>
+    <div class="photo-grid">
+      <div class="photo-item tall"><img src="assets/pottery/p1.jpg" loading="lazy" alt="The pottery yard at golden hour"><div class="photo-caption">The pottery yard at golden hour</div></div>
+      <div class="photo-item"><img src="assets/pottery/p2.jpg" loading="lazy" alt="Shelves of ceramics"><div class="photo-caption">Shelves of ceramics in dappled forest light</div></div>
+      <div class="photo-item"><img src="assets/pottery/p4.jpg" loading="lazy" alt="The mug wall"><div class="photo-caption">The mug wall - over 40 one-of-a-kind pieces</div></div>
+      <div class="photo-item"><img src="assets/pottery/p3.jpg" loading="lazy" alt="Handcrafted tea sets"><div class="photo-caption">Handcrafted tea sets, each one unique</div></div>
+      <div class="photo-item tall"><img src="assets/pottery/p5.jpg" loading="lazy" alt="Inside the main showroom"><div class="photo-caption">Inside the main showroom</div></div>
+      <div class="photo-item"><img src="assets/pottery/p6.jpg" loading="lazy" alt="Stacked plates and bowls"><div class="photo-caption">Stacked plates and bowls, ready to find a home</div></div>
+      <div class="photo-item"><img src="assets/pottery/p7.jpg" loading="lazy" alt="Sculptural pieces"><div class="photo-caption">Sculptural pieces in the garden</div></div>
+      <div class="photo-item"><img src="assets/pottery/p8.jpg" loading="lazy" alt="Showroom interior"><div class="photo-caption">The showroom interior with natural beam light</div></div>
+      <div class="photo-item"><img src="assets/pottery/p9.jpg" loading="lazy" alt="Dark ceramics shelf"><div class="photo-caption">Dark ceramics shelf by the open window</div></div>
+      <div class="photo-item"><img src="assets/pottery/p10.jpg" loading="lazy" alt="Cafe seating area"><div class="photo-caption">The cafe seating area surrounded by jungle</div></div>
+      <div class="photo-item"><img src="assets/pottery/p11.jpg" loading="lazy" alt="Our group at pottery grounds"><div class="photo-caption">Our group at the pottery grounds</div></div>
+    </div>
+  </div>
+
+  <button class="chapter-cover" id="cafe" onclick="toggleGallery('cafe-gallery')" aria-expanded="false" aria-controls="cafe-gallery">
+    <img src="assets/cafe/sign.jpg" loading="lazy" alt="Friendcation Cafe sign">
+    <div class="chapter-info">
+      <div>
+        <div class="chapter-label">Chapter Two</div>
+        <div class="chapter-title">Friendcation<br>Cafe</div>
+      </div>
+      <div class="chapter-cta" aria-hidden="true">View photos</div>
+    </div>
+  </button>
+
+  <div class="gallery-section" id="cafe-gallery">
+    <div class="gallery-header">
+      <div>
+        <div class="section-tag">Friendcation - Specialty Coffee and Eatery</div>
+        <h2 class="section-title">Where we<br>called it home</h2>
+      </div>
+      <button class="gallery-close" onclick="toggleGallery('cafe-gallery')" aria-label="Close cafe gallery">x Close</button>
+    </div>
+    <div style="padding:0 48px 40px;max-width:680px">
+      <p style="font-size:15px;line-height:1.9;color:var(--muted);font-weight:300;margin-top:24px">Friendcation Specialty Coffee and Eatery is more than just a cafe. Tucked away in Chiang Rai with sweeping mountain views, beautifully landscaped gardens, and a stunning white arched building, Friendcation welcomes you into a world of warmth and good vibes. Inside, the signature mint green interior, floating flowers, La Marzocco espresso machine, and the glowing neon reminder that life is beautiful and so are you set the tone perfectly.</p>
+    </div>
+    <div class="photo-grid">
+      <div class="photo-item tall"><img src="assets/cafe/c18.jpg" loading="lazy" alt="The arched entrance"><div class="photo-caption">The arched entrance</div></div>
+      <div class="photo-item"><img src="assets/cafe/c1.jpg" loading="lazy" alt="Life is beautiful neon sign"><div class="photo-caption">Life is beautiful and so are you</div></div>
+      <div class="photo-item"><img src="assets/cafe/c3.jpg" loading="lazy" alt="Mint green interior"><div class="photo-caption">The mint green interior</div></div>
+      <div class="photo-item"><img src="assets/cafe/c4.jpg" loading="lazy" alt="Coffee bar"><div class="photo-caption">The coffee bar with La Marzocco</div></div>
+      <div class="photo-item tall"><img src="assets/cafe/c21.jpg" loading="lazy" alt="Just Love tulip garden"><div class="photo-caption">The Just Love tulip garden</div></div>
+      <div class="photo-item"><img src="assets/cafe/c5.jpg" loading="lazy" alt="La Marzocco machine"><div class="photo-caption">The La Marzocco espresso machine</div></div>
+      <div class="photo-item"><img src="assets/cafe/c20.jpg" loading="lazy" alt="Garden walkway"><div class="photo-caption">Garden and bougainvillea walkway</div></div>
+      <div class="photo-item"><img src="assets/cafe/c9.jpg" loading="lazy" alt="Reception counter"><div class="photo-caption">The reception counter with floating flowers</div></div>
+      <div class="photo-item"><img src="assets/cafe/c13.jpg" loading="lazy" alt="Lychee Rose Cheese Pie"><div class="photo-caption">Best seller - Lychee and Rose Cheese Pie</div></div>
+      <div class="photo-item"><img src="assets/cafe/c17.jpg" loading="lazy" alt="Desserts"><div class="photo-caption">Cheddar Cheese Roll and Macadamia Cheesecake</div></div>
+      <div class="photo-item"><img src="assets/cafe/c23.jpg" loading="lazy" alt="Mountain view"><div class="photo-caption">Chiang Rai mountain view</div></div>
+      <div class="photo-item"><img src="assets/cafe/c25.jpg" loading="lazy" alt="Rooftop stairway"><div class="photo-caption">Stairway to the rooftop</div></div>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <div class="about-image"><img src="assets/cafe/c19.jpg" loading="lazy" alt="Friendcation cafe exterior"></div>
+    <div class="about-text">
+      <div class="section-tag reveal">About the Cafe</div>
+      <h2 class="section-title reveal">Stop by after<br>Doy Din Dang</h2>
+      <p class="reveal">Friendcation Specialty Coffee and Eatery is more than just a cafe. Tucked away in Chiang Rai with sweeping mountain views, beautifully landscaped gardens, and a stunning white arched building, Friendcation welcomes you into a world of warmth and good vibes.</p>
+      <p class="reveal">Inside, the signature mint green interior, floating flowers, La Marzocco espresso machine, and the glowing neon reminder that life is beautiful and so are you set the tone perfectly.</p>
+      <div style="display:flex;gap:16px;flex-wrap:wrap" class="reveal">
+        <a href="https://www.instagram.com/friendcation.cafe?igsh=a2VqajR2eGQ0N3pi" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border:1px solid var(--border);border-radius:100px;font-size:12px;letter-spacing:1px;text-transform:uppercase;text-decoration:none;color:var(--text);transition:all 0.2s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">Instagram</a>
+        <a href="https://www.facebook.com/share/1CWGYt1U4i/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border:1px solid var(--border);border-radius:100px;font-size:12px;letter-spacing:1px;text-transform:uppercase;text-decoration:none;color:var(--text);transition:all 0.2s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">Facebook</a>
+        <a href="https://www.tiktok.com/@friendcation.cafe?_r=1&_t=ZS-94XfqTjXgRw" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border:1px solid var(--border);border-radius:100px;font-size:12px;letter-spacing:1px;text-transform:uppercase;text-decoration:none;color:var(--text);transition:all 0.2s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">TikTok</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="founder-section">
+    <div class="founder-text">
+      <div class="section-tag reveal">The Interview</div>
+      <h2 class="section-title reveal">Meeting the<br>founder</h2>
+      <p class="reveal">As part of our agile marketing project, we had the opportunity to sit down with the founder of Friendcation Cafe for an in-depth interview. The conversation gave us invaluable insights into the vision behind the cafe, the story of how it came to be, and what makes Friendcation truly special in Chiang Rai.</p>
+      <p class="reveal">The founders passion and openness made our research come alive. We are grateful for their time and trust in our team.</p>
+      <p style="font-size:13px;color:var(--accent);letter-spacing:1px;text-transform:uppercase;font-weight:400" class="reveal">Mae Fah Luang University - Marketing Section 1</p>
+    </div>
+    <div class="founder-image"><img src="assets/team/founder.jpg" loading="lazy" alt="Our team with the founder of Friendcation Cafe"></div>
+  </div>
+
+  <div class="interview-split" style="display:grid;grid-template-columns:1fr 1fr;gap:0">
+    <div style="height:500px;overflow:hidden">
+      <img src="assets/team/interview.jpg" loading="lazy" alt="Group conducting the founder interview" style="width:100%;height:100%;object-fit:cover">
+    </div>
+    <div style="background:var(--accent-light);display:flex;flex-direction:column;justify-content:center;padding:72px">
+      <div class="section-tag">Behind the scenes</div>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;margin-bottom:20px;line-height:1.1">The interview<br>in action</h3>
+      <p style="font-size:15px;line-height:1.9;color:var(--muted);font-weight:300">Our team gathered around the founder with laptops and notebooks, listening closely and asking thoughtful questions. This moment captured everything our project was about.</p>
+    </div>
+  </div>
+
+  <div class="videos-section" id="videos">
+    <div class="section-tag reveal">Behind the lens</div>
+    <h2 class="section-title reveal">Our videos</h2>
+    <div class="videos-grid">
+      <div class="video-item reveal">
+        <video controls muted playsinline id="video1">
+          <source src="assets/videos/v1.mp4" type="video/mp4">
+        </video>
+        <div class="video-error" id="video1-error"><span>&#127909;</span>Video unavailable</div>
+        <div class="video-label">Friendcation - Short clip 01</div>
+      </div>
+      <div class="video-item reveal">
+        <video controls muted playsinline id="video2">
+          <source src="assets/videos/v2.mp4" type="video/mp4">
+        </video>
+        <div class="video-error" id="video2-error"><span>&#127909;</span>Video unavailable</div>
+        <div class="video-label">Friendcation - Short clip 02</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="project-section" id="project">
+    <div class="section-tag reveal">Agile Marketing</div>
+    <h2 class="section-title reveal">Our project<br>at a glance</h2>
+    <div class="project-cards">
+      <div class="project-card reveal">
+        <div class="card-number">01</div>
+        <div class="card-title">Founder Interview</div>
+        <p class="card-desc">We conducted an in-depth interview with the founder of Friendcation Cafe to understand their vision, challenges, and marketing goals. The insights shaped all three of our experiments.</p>
+      </div>
+      <div class="project-card reveal">
+        <div class="card-number">02</div>
+        <div class="card-title">3 Marketing Experiments</div>
+        <p class="card-desc">Using agile marketing methods, we designed and ran three real-world marketing experiments for the cafe. Each sprint was guided by data, feedback, and iteration.</p>
+      </div>
+      <div class="project-card reveal">
+        <div class="card-number">03</div>
+        <div class="card-title">Group 9 - Section 1</div>
+        <p class="card-desc">Twelve students from the Marketing program at Mae Fah Luang University came together, learned together, and created something worth remembering together.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="findus-section" id="findus">
+    <div class="findus-info">
+      <div class="section-tag reveal">Find the Cafe</div>
+      <h2 class="section-title reveal">Visit<br>Friendcation</h2>
+      <p class="reveal">Located in Chiang Rai, Friendcation is easy to find and well worth the visit. After exploring Doy Din Dang Pottery nearby, head over and treat yourself to specialty coffee, Northern Thai food, and that unforgettable mint green interior.</p>
+      <div class="social-grid reveal">
+        <a href="https://www.instagram.com/friendcation.cafe?igsh=a2VqajR2eGQ0N3pi" target="_blank" rel="noopener noreferrer" class="social-link"><span class="social-icon" aria-hidden="true">&#128248;</span> Instagram</a>
+        <a href="https://www.facebook.com/share/1CWGYt1U4i/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="social-link"><span class="social-icon" aria-hidden="true">&#128101;</span> Facebook</a>
+        <a href="https://www.tiktok.com/@friendcation.cafe?_r=1&_t=ZS-94XfqTjXgRw" target="_blank" rel="noopener noreferrer" class="social-link"><span class="social-icon" aria-hidden="true">&#127925;</span> TikTok</a>
+        <a href="https://maps.app.goo.gl/2JxrWvoTyBg9gpJr6" target="_blank" rel="noopener noreferrer" class="social-link"><span class="social-icon" aria-hidden="true">&#128205;</span> Google Maps</a>
+      </div>
+    </div>
+    <div class="map-container">
+      <iframe src="https://maps.google.com/maps?q=Friendcation+Specialty+Coffee+Chiang+Rai&output=embed" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Friendcation Cafe on Google Maps" id="mapFrame"></iframe>
+      <div class="map-fallback" id="mapFallback" style="display:none">
+        <p>Map could not load</p>
+        <a href="https://maps.app.goo.gl/2JxrWvoTyBg9gpJr6" target="_blank" rel="noopener noreferrer">Open in Google Maps</a>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div>
+    <div class="footer-brand">Group 9 - MKG Section 1</div>
+    <p style="margin-top:8px">Mae Fah Luang University - Marketing Section 1 - 2025</p>
+  </div>
+  <p>Made with &#9825; for our friendship</p>
+</footer>
+
+<script>
+  window.addEventListener('load', () => {
+    setTimeout(() => document.getElementById('intro-bg').classList.add('loaded'), 100);
+  });
+
+  document.getElementById('enterBtn').addEventListener('click', enterSite);
+
+  function enterSite() {
+    document.getElementById('scrollHint').classList.add('fade-out');
+    document.getElementById('intro').classList.add('hidden');
+    document.getElementById('mainNav').classList.add('visible');
+    const audio = document.getElementById('bgAudio');
+    audio.play()
+      .then(() => syncMusicBtn(true))
+      .catch(() => {
+        syncMusicBtn(false);
+        showToast('Audio blocked by browser. Tap Play music to enable.');
+      });
+  }
+
+  document.getElementById('musicBtn').addEventListener('click', toggleMusic);
+
+  function toggleMusic() {
+    const audio = document.getElementById('bgAudio');
+    if (!audio.paused) {
+      audio.pause();
+      syncMusicBtn(false);
+    } else {
+      audio.play()
+        .then(() => syncMusicBtn(true))
+        .catch(() => showToast('Audio could not be played.'));
+    }
+  }
+
+  function syncMusicBtn(playing) {
+    const btn = document.getElementById('musicBtn');
+    const icon = document.getElementById('musicIcon');
+    const label = document.getElementById('musicLabel');
+    btn.setAttribute('aria-pressed', playing ? 'true' : 'false');
+    btn.classList.toggle('playing', playing);
+    icon.textContent = playing ? '&#9835;' : '&#9834;';
+    label.textContent = playing ? 'Playing' : 'Play music';
+  }
+
+  let toastTimer = null;
+  function showToast(msg) {
+    const toast = document.getElementById('audio-toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 4000);
+  }
+
+  function toggleGallery(id) {
+    const gallery = document.getElementById(id);
+    const isOpen = gallery.classList.contains('open');
+    document.querySelectorAll('.gallery-section').forEach(g => g.classList.remove('open'));
+    document.querySelectorAll('.chapter-cover').forEach(btn => btn.setAttribute('aria-expanded', 'false'));
+    if (!isOpen) {
+      gallery.classList.add('open');
+      const coverId = id === 'pottery-gallery' ? 'pottery' : 'cafe';
+      const coverBtn = document.getElementById(coverId);
+      if (coverBtn) coverBtn.setAttribute('aria-expanded', 'true');
+      setTimeout(() => gallery.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+  }
+
+  function openLightbox(imgEl) {
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightbox-img');
+    lbImg.src = imgEl.src;
+    lbImg.alt = imgEl.alt;
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('lightbox-close').focus();
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+  document.getElementById('lightbox').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeLightbox(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+
+  document.querySelectorAll('.photo-item img').forEach(img => {
+    img.addEventListener('click', (e) => { e.stopPropagation(); openLightbox(img); });
+  });
+
+  ['video1', 'video2'].forEach(id => {
+    const video = document.getElementById(id);
+    if (!video) return;
+    const showErr = () => {
+      video.style.display = 'none';
+      const errEl = document.getElementById(id + '-error');
+      if (errEl) errEl.style.display = 'flex';
+    };
+    video.addEventListener('error', showErr);
+    const source = video.querySelector('source');
+    if (source) source.addEventListener('error', showErr);
+  });
+
+  const mapFrame = document.getElementById('mapFrame');
+  if (mapFrame) {
+    mapFrame.addEventListener('error', () => {
+      mapFrame.style.display = 'none';
+      document.getElementById('mapFallback').style.display = 'flex';
+    });
+    setTimeout(() => {
+      try {
+        if (mapFrame.contentDocument && !mapFrame.contentDocument.body.innerHTML) {
+          mapFrame.style.display = 'none';
+          document.getElementById('mapFallback').style.display = 'flex';
+        }
+      } catch(e) {}
+    }, 5000);
+  }
+
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+</script>
+</body>
+</html>
